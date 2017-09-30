@@ -26,9 +26,9 @@
 #include "memorysaver.h"
 #if defined ( RASPBERRY_PI ) 
 #else
-	#include "Arduino.h"
-	#include <pins_arduino.h>
-	#include "memorysaver.h"
+#include "Arduino.h"
+#include <pins_arduino.h>
+#include "memorysaver.h"
 #endif
 
 #if defined (__AVR__)
@@ -71,71 +71,71 @@
 #define pgm_read_word_far(x)    ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x))))
 #define PSTR(x)  x
 #if defined F
-	#undef F
+#undef F
 #endif
 #define F(X) (X)	
 #endif	
 
 #if defined(ESP8266)
-	#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
-	#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
-	#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
-	#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
+#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
 	
-	#define cport(port, data) port &= data
-	#define sport(port, data) port |= data
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
 	
-	#define swap(type, i, j) {type t = i; i = j; j = t;}
+#define swap(type, i, j) {type t = i; i = j; j = t;}
 	
-	#define fontbyte(x) cfont.font[x]  
+#define fontbyte(x) cfont.font[x]  
 	
-	#define regtype volatile uint32_t
-	#define regsize uint32_t
+#define regtype volatile uint32_t
+#define regsize uint32_t
 #endif	
 
 #if defined(ESP32)
-	#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
-	#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
-	#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
-	#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
+#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
 	
-	#define cport(port, data) port &= data
-	#define sport(port, data) port |= data
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
 	
-	#define swap(type, i, j) {type t = i; i = j; j = t;}
+#define swap(type, i, j) {type t = i; i = j; j = t;}
 	
-	#define fontbyte(x) cfont.font[x]  
+#define fontbyte(x) cfont.font[x]  
 	
-	#define regtype volatile uint32_t
-	#define regsize uint32_t
+#define regtype volatile uint32_t
+#define regsize uint32_t
 #endif
 
 #if defined(__CPU_ARC__)
-	#define cbi(reg, bitmask) *reg &= ~bitmask
-	#define sbi(reg, bitmask) *reg |= bitmask
-	#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
-	#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
-	#define cport(port, data) port &= data
-	#define sport(port, data) port |= data
-	#define swap(type, i, j) {type t = i; i = j; j = t;}
-	#define fontbyte(x) pgm_read_byte(&cfont.font[x])  
-	#define regtype volatile uint32_t
-	#define regsize uint32_t
+#define cbi(reg, bitmask) *reg &= ~bitmask
+#define sbi(reg, bitmask) *reg |= bitmask
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
+#define swap(type, i, j) {type t = i; i = j; j = t;}
+#define fontbyte(x) pgm_read_byte(&cfont.font[x])  
+#define regtype volatile uint32_t
+#define regsize uint32_t
 #endif
 
 #if defined (RASPBERRY_PI)
-	#define regtype volatile uint32_t
-	#define regsize uint32_t 
-	#define byte uint8_t
-	#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
-  #define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
-  #define PROGMEM
+#define regtype volatile uint32_t
+#define regsize uint32_t 
+#define byte uint8_t
+#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
+#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
+#define PROGMEM
 	
-	#define PSTR(x)  x
-	#if defined F
-	#undef F
-	#endif
-	#define F(X) (X)
+#define PSTR(x)  x
+#if defined F
+#undef F
+#endif
+#define F(X) (X)
 #endif
 
 
@@ -391,7 +391,7 @@
 #define ARDUCHIP_TEST1       	0x00  //TEST register
 
 #if !(defined OV2640_MINI_2MP)
-	#define ARDUCHIP_FRAMES			  0x01  //FRAME control register, Bit[2:0] = Number of frames to be captured																		//On 5MP_Plus platforms bit[2:0] = 7 means continuous capture until frame buffer is full
+#define ARDUCHIP_FRAMES			  0x01  //FRAME control register, Bit[2:0] = Number of frames to be captured																		//On 5MP_Plus platforms bit[2:0] = 7 means continuous capture until frame buffer is full
 #endif
 
 #define ARDUCHIP_MODE      		0x02  //Mode register
@@ -401,15 +401,15 @@
 
 #define ARDUCHIP_TIM       		0x03  //Timming control
 #if !(defined OV2640_MINI_2MP)
-	#define HREF_LEVEL_MASK    		0x01  //0 = High active , 		1 = Low active
-	#define VSYNC_LEVEL_MASK   		0x02  //0 = High active , 		1 = Low active
-	#define LCD_BKEN_MASK      		0x04  //0 = Enable, 					1 = Disable
-	#if (defined ARDUCAM_SHIELD_V2)
-		#define PCLK_REVERSE_MASK  	0x08  //0 = Normal PCLK, 		1 = REVERSED PCLK
-	#else
-		#define PCLK_DELAY_MASK  		0x08  //0 = data no delay,		1 = data delayed one PCLK
-	#endif
-	//#define MODE_MASK          		0x10  //0 = LCD mode, 				1 = FIFO mode
+#define HREF_LEVEL_MASK    		0x01  //0 = High active , 		1 = Low active
+#define VSYNC_LEVEL_MASK   		0x02  //0 = High active , 		1 = Low active
+#define LCD_BKEN_MASK      		0x04  //0 = Enable, 					1 = Disable
+#if (defined ARDUCAM_SHIELD_V2)
+#define PCLK_REVERSE_MASK  	0x08  //0 = Normal PCLK, 		1 = REVERSED PCLK
+#else
+#define PCLK_DELAY_MASK  		0x08  //0 = data no delay,		1 = data delayed one PCLK
+#endif
+//#define MODE_MASK          		0x10  //0 = LCD mode, 				1 = FIFO mode
 #endif
 //#define FIFO_PWRDN_MASK	   		0x20  	//0 = Normal operation, 1 = FIFO power down
 //#define LOW_POWER_MODE			  0x40  	//0 = Normal mode, 			1 = Low power mode
@@ -463,7 +463,7 @@ struct sensor_reg {
 
 class ArduCAM 
 {
-	public:
+ public:
 	ArduCAM( void );
 	ArduCAM(int CS);
 	ArduCAM(byte model ,int CS);
@@ -488,7 +488,7 @@ class ArduCAM
 	uint8_t get_bit(uint8_t addr, uint8_t bit);
 	void set_mode(uint8_t mode);
  
-  uint8_t bus_write(int address, int value);
+	uint8_t bus_write(int address, int value);
 	uint8_t bus_read(int address);	
  
 	// Write 8 bit values to 8 bit register address
@@ -500,7 +500,7 @@ class ArduCAM
 	// Write 8 bit values to 16 bit register address
 	int wrSensorRegs16_8(const struct sensor_reg*);
 	
-  // Write 16 bit values to 16 bit register address
+	// Write 16 bit values to 16 bit register address
 	int wrSensorRegs16_16(const struct sensor_reg*);
 	
 	// Read/write 8 bit value to/from 8 bit register address	
@@ -528,7 +528,7 @@ class ArduCAM
 	
 	
 	void OV2640_set_Light_Mode(uint8_t Light_Mode);
-  void OV3640_set_Light_Mode(uint8_t Light_Mode);
+	void OV3640_set_Light_Mode(uint8_t Light_Mode);
 	void OV5642_set_Light_Mode(uint8_t Light_Mode);
 	void OV5640_set_Light_Mode(uint8_t Light_Mode);
 	
@@ -540,8 +540,8 @@ class ArduCAM
 	
 	void OV2640_set_Brightness(uint8_t Brightness);
 	void OV3640_set_Brightness(uint8_t Brightness);
-  void OV5642_set_Brightness(uint8_t Brightness);
-  void OV5640_set_Brightness(uint8_t Brightness);
+	void OV5642_set_Brightness(uint8_t Brightness);
+	void OV5640_set_Brightness(uint8_t Brightness);
 	
 	void OV2640_set_Contrast(uint8_t Contrast);
 	void OV3640_set_Contrast(uint8_t Contrast);
@@ -562,30 +562,30 @@ class ArduCAM
 	void OV5642_set_hue(uint8_t degree);
 	void OV5642_set_Exposure_level(uint8_t level);
 	void OV5642_set_Sharpness(uint8_t Sharpness);
-  void OV5642_set_Mirror_Flip(uint8_t Mirror_Flip);
-  void OV5642_set_Compress_quality(uint8_t quality);
-  void OV5642_Test_Pattern(uint8_t Pattern);
+	void OV5642_set_Mirror_Flip(uint8_t Mirror_Flip);
+	void OV5642_set_Compress_quality(uint8_t quality);
+	void OV5642_Test_Pattern(uint8_t Pattern);
    
   
-  void OV5640_set_EV(uint8_t EV);
-  void OV5640_set_Night_Mode(uint8_t Night_mode);
-  void OV5640_set_Banding_Filter(uint8_t Banding_Filter);
+	void OV5640_set_EV(uint8_t EV);
+	void OV5640_set_Night_Mode(uint8_t Night_mode);
+	void OV5640_set_Banding_Filter(uint8_t Banding_Filter);
 	
 	
 	
 	
 	void set_format(byte fmt);
 	
-	#if defined (RASPBERRY_PI)
-    uint8_t transfer(uint8_t data);
+#if defined (RASPBERRY_PI)
+	uint8_t transfer(uint8_t data);
 	void transfers(uint8_t *buf, uint32_t size);
-    #endif
+#endif
 
 	void transferBytes_(uint8_t * out, uint8_t * in, uint8_t size);
 	void transferBytes(uint8_t * out, uint8_t * in, uint32_t size);
 	inline void setDataBits(uint16_t bits);
 	
-  protected:
+ protected:
 	regtype *P_CS;
 	regsize B_CS;
 	byte m_fmt;
@@ -594,59 +594,59 @@ class ArduCAM
 };
 
 #if defined OV7660_CAM	
-	#include "ov7660_regs.h"
+#include "ov7660_regs.h"
 #endif
 
 #if defined OV7725_CAM	
-	#include "ov7725_regs.h"
+#include "ov7725_regs.h"
 #endif
 
 #if defined OV7670_CAM	
-	#include "ov7670_regs.h"
+#include "ov7670_regs.h"
 #endif
 
 #if defined OV7675_CAM
-	#include "ov7675_regs.h"
+#include "ov7675_regs.h"
 #endif
 
 #if ( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )	
-	#include "ov5642_regs.h"
+#include "ov5642_regs.h"
 #endif
 
 #if defined OV3640_CAM	
-	#include "ov3640_regs.h"
+#include "ov3640_regs.h"
 #endif
 
 #if (defined(OV2640_CAM) || defined(OV2640_MINI_2MP))
-	#include "ov2640_regs.h"
+#include "ov2640_regs.h"
 #endif
 
 #if defined MT9D111A_CAM  || defined MT9D111B_CAM 	
-	#include "mt9d111_regs.h"
+#include "mt9d111_regs.h"
 #endif
 
 #if defined MT9M112_CAM	
-	#include "mt9m112_regs.h"
+#include "mt9m112_regs.h"
 #endif
 
 #if defined MT9V111_CAM	
-	#include "mt9v111_regs.h"
+#include "mt9v111_regs.h"
 #endif
 
 #if ( defined(OV5640_CAM)	|| defined(OV5640_MINI_5MP_PLUS) )
-	#include "ov5640_regs.h"
+#include "ov5640_regs.h"
 #endif
 
 #if defined MT9M001_CAM	
-	#include "mt9m001_regs.h"
+#include "mt9m001_regs.h"
 #endif
 
 #if defined MT9T112_CAM	
-	#include "mt9t112_regs.h"
+#include "mt9t112_regs.h"
 #endif
 
 #if defined MT9D112_CAM	
-	#include "mt9d112_regs.h"
+#include "mt9d112_regs.h"
 #endif
 
 
