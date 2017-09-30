@@ -49,44 +49,24 @@ ArduCAM::ArduCAM(int CS) {
 }
 
 ArduCAM::ArduCAM(byte model ,int CS) {
-#if defined (RASPBERRY_PI)
-	if(CS>=0)
-		{
-			B_CS = CS;
-		}
-#else
 #if (defined(ESP8266)||defined(ESP32))
 	B_CS = CS;
 #else
 	P_CS  = portOutputRegister(digitalPinToPort(CS));
 	B_CS  = digitalPinToBitMask(CS);
 #endif
-#endif
-#if defined (RASPBERRY_PI)
-	pinMode(CS, OUTPUT);
-#else
 	pinMode(CS, OUTPUT);
 	sbi(P_CS, B_CS);
-#endif
 	sensor_model = model;
-	switch (sensor_model)
-		{
+	switch (sensor_model) {
 		case OV5640:
 		case OV5642:
 		case MT9T112:
 		case MT9D112:
-#if defined (RASPBERRY_PI)
-			sensor_addr = 0x3c;
-#else
 			sensor_addr = 0x78;
-#endif
 			break;
 		default:
-#if defined (RASPBERRY_PI)
-			sensor_addr = 0x21;
-#else
 			sensor_addr = 0x42;
-#endif
 			break;
 		}	
 #if defined (RASPBERRY_PI)
@@ -97,11 +77,9 @@ ArduCAM::ArduCAM(byte model ,int CS) {
 #endif
 }
 
-void ArduCAM::InitCAM()
-{
+void ArduCAM::InitCAM() {
 	
-	switch (sensor_model)
-		{
+	switch (sensor_model) {
 		case OV5642:
 			{
 #if ( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )
@@ -184,23 +162,19 @@ void ArduCAM::InitCAM()
 		}
 }
 
-void ArduCAM::flush_fifo(void)
-{
+void ArduCAM::flush_fifo(void) {
 	write_reg(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
 }
 
-void ArduCAM::start_capture(void)
-{
+void ArduCAM::start_capture(void) {
 	write_reg(ARDUCHIP_FIFO, FIFO_START_MASK);
 }
 
-void ArduCAM::clear_fifo_flag(void )
-{
+void ArduCAM::clear_fifo_flag(void ) {
 	write_reg(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
 }
 
-uint32_t ArduCAM::read_fifo_length(void)
-{
+uint32_t ArduCAM::read_fifo_length(void) {
 	uint32_t len1,len2,len3,length=0;
 	len1 = read_reg(FIFO_SIZE1);
 	len2 = read_reg(FIFO_SIZE2);
@@ -209,85 +183,48 @@ uint32_t ArduCAM::read_fifo_length(void)
 	return length;	
 }
 
-#if defined (RASPBERRY_PI)
-uint8_t ArduCAM::transfer(uint8_t data)
-{
-	uint8_t temp;
-	temp = arducam_spi_transfer(data);
-	return temp;
+void ArduCAM::set_fifo_burst() {
+	SPI.transfer(BURST_FIFO_READ);		
 }
 
-void ArduCAM::transfers(uint8_t *buf, uint32_t size)
-{
-	arducam_spi_transfers(buf, size);
-}
-
-#endif
-
-void ArduCAM::set_fifo_burst()
-{
-#if defined (RASPBERRY_PI)
-	transfer(BURST_FIFO_READ);
-#else
-	SPI.transfer(BURST_FIFO_READ);
-#endif
-		
-}
-
-void ArduCAM::CS_HIGH(void)
-{
+void ArduCAM::CS_HIGH(void) {
 	sbi(P_CS, B_CS);	
 }
-void ArduCAM::CS_LOW(void)
-{
+void ArduCAM::CS_LOW(void) {
 	cbi(P_CS, B_CS);	
 }
 
-uint8_t ArduCAM::read_fifo(void)
-{
+uint8_t ArduCAM::read_fifo(void) {
 	uint8_t data;
 	data = bus_read(SINGLE_FIFO_READ);
 	return data;
 }
 
-uint8_t ArduCAM::read_reg(uint8_t addr)
-{
+uint8_t ArduCAM::read_reg(uint8_t addr) {
 	uint8_t data;
-#if defined (RASPBERRY_PI)
-	data = bus_read(addr);	
-#else
 	data = bus_read(addr & 0x7F);
-#endif
 	return data;
 }
 
-void ArduCAM::write_reg(uint8_t addr, uint8_t data)
-{
-#if defined (RASPBERRY_PI)
-	bus_write(addr , data);
-#else
+void ArduCAM::write_reg(uint8_t addr, uint8_t data) {
 	bus_write(addr | 0x80, data);
-#endif  
 }
 
 //Set corresponding bit  
-void ArduCAM::set_bit(uint8_t addr, uint8_t bit)
-{
+void ArduCAM::set_bit(uint8_t addr, uint8_t bit) {
 	uint8_t temp;
 	temp = read_reg(addr);
 	write_reg(addr, temp | bit);
 }
 //Clear corresponding bit 
-void ArduCAM::clear_bit(uint8_t addr, uint8_t bit)
-{
+void ArduCAM::clear_bit(uint8_t addr, uint8_t bit) {
 	uint8_t temp;
 	temp = read_reg(addr);
 	write_reg(addr, temp & (~bit));
 }
 
 //Get corresponding bit status
-uint8_t ArduCAM::get_bit(uint8_t addr, uint8_t bit)
-{
+uint8_t ArduCAM::get_bit(uint8_t addr, uint8_t bit) {
 	uint8_t temp;
 	temp = read_reg(addr);
 	temp = temp & bit;
@@ -298,8 +235,7 @@ uint8_t ArduCAM::get_bit(uint8_t addr, uint8_t bit)
 //MCU2LCD_MODE: MCU writes the LCD screen GRAM
 //CAM2LCD_MODE: Camera takes control of the LCD screen
 //LCD2MCU_MODE: MCU read the LCD screen GRAM
-void ArduCAM::set_mode(uint8_t mode)
-{
+void ArduCAM::set_mode(uint8_t mode) {
 	switch (mode)
 		{
 		case MCU2LCD_MODE:
@@ -317,28 +253,17 @@ void ArduCAM::set_mode(uint8_t mode)
 		}
 }
 
-uint8_t ArduCAM::bus_write(int address,int value)
-{	
+uint8_t ArduCAM::bus_write(int address,int value) {	
 	cbi(P_CS, B_CS);
-#if defined (RASPBERRY_PI)
-	arducam_spi_write(address | 0x80, value);
-#else
 	SPI.transfer(address);
 	SPI.transfer(value);
-#endif
 	sbi(P_CS, B_CS);
 	return 1;
 }
 
-uint8_t ArduCAM:: bus_read(int address)
-{
+uint8_t ArduCAM:: bus_read(int address) {
 	uint8_t value;
 	cbi(P_CS, B_CS);
-#if defined (RASPBERRY_PI)
-	value = arducam_spi_read(address & 0x7F);
-	sbi(P_CS, B_CS);
-	return value;	
-#else
 #if (defined(ESP8266) || defined(__arm__))
 #if defined(OV5642_MINI_5MP)
 	SPI.transfer(address);
@@ -362,52 +287,10 @@ uint8_t ArduCAM:: bus_read(int address)
 	sbi(P_CS, B_CS);
 	return value;
 #endif
-#endif
 }
 
 
-
-void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
-{
-#if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP))
-	switch(size)
-		{
-		case OV2640_160x120:
-			wrSensorRegs8_8(OV2640_160x120_JPEG);
-			break;
-		case OV2640_176x144:
-			wrSensorRegs8_8(OV2640_176x144_JPEG);
-			break;
-		case OV2640_320x240:
-			wrSensorRegs8_8(OV2640_320x240_JPEG);
-			break;
-		case OV2640_352x288:
-			wrSensorRegs8_8(OV2640_352x288_JPEG);
-			break;
-		case OV2640_640x480:
-			wrSensorRegs8_8(OV2640_640x480_JPEG);
-			break;
-		case OV2640_800x600:
-			wrSensorRegs8_8(OV2640_800x600_JPEG);
-			break;
-		case OV2640_1024x768:
-			wrSensorRegs8_8(OV2640_1024x768_JPEG);
-			break;
-		case OV2640_1280x1024:
-			wrSensorRegs8_8(OV2640_1280x1024_JPEG);
-			break;
-		case OV2640_1600x1200:
-			wrSensorRegs8_8(OV2640_1600x1200_JPEG);
-			break;
-		default:
-			wrSensorRegs8_8(OV2640_320x240_JPEG);
-			break;
-		}
-#endif
-}
-
-void ArduCAM::OV5642_set_RAW_size(uint8_t size)
-{
+void ArduCAM::OV5642_set_RAW_size(uint8_t size) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)		
 	switch (size)
 		{
@@ -429,8 +312,7 @@ void ArduCAM::OV5642_set_RAW_size(uint8_t size)
 #endif			
 }
 
-void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
-{
+void ArduCAM::OV5642_set_JPEG_size(uint8_t size) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)
 	uint8_t reg_val;
 
@@ -465,8 +347,7 @@ void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 }
 
 
-void ArduCAM::OV5640_set_JPEG_size(uint8_t size)
-{
+void ArduCAM::OV5640_set_JPEG_size(uint8_t size) {
 #if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
 	switch (size)
 		{
@@ -506,103 +387,16 @@ void ArduCAM::OV5640_set_JPEG_size(uint8_t size)
 
 }
 
-void ArduCAM::set_format(byte fmt)
-{
+void ArduCAM::set_format(byte fmt) {
 	if (fmt == BMP)
 		m_fmt = BMP;
 	else
 		m_fmt = JPEG;
-}
-
-void ArduCAM::OV2640_set_Light_Mode(uint8_t Light_Mode)
-{
-#if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP))
-	switch(Light_Mode)
-		{
-			
-		case Auto:
-			wrSensorReg8_8(0xff, 0x00);
-			wrSensorReg8_8(0xc7, 0x00); //AWB on
-			break;
-		case Sunny:
-			wrSensorReg8_8(0xff, 0x00);
-			wrSensorReg8_8(0xc7, 0x40); //AWB off
-			wrSensorReg8_8(0xcc, 0x5e);
-			wrSensorReg8_8(0xcd, 0x41);
-			wrSensorReg8_8(0xce, 0x54);
-			break;
-		case Cloudy:
-			wrSensorReg8_8(0xff, 0x00);
-			wrSensorReg8_8(0xc7, 0x40); //AWB off
-			wrSensorReg8_8(0xcc, 0x65);
-			wrSensorReg8_8(0xcd, 0x41);
-			wrSensorReg8_8(0xce, 0x4f);  
-			break;
-		case Office:
-			wrSensorReg8_8(0xff, 0x00);
-			wrSensorReg8_8(0xc7, 0x40); //AWB off
-			wrSensorReg8_8(0xcc, 0x52);
-			wrSensorReg8_8(0xcd, 0x41);
-			wrSensorReg8_8(0xce, 0x66);
-			break;
-		case Home:
-			wrSensorReg8_8(0xff, 0x00);
-			wrSensorReg8_8(0xc7, 0x40); //AWB off
-			wrSensorReg8_8(0xcc, 0x42);
-			wrSensorReg8_8(0xcd, 0x3f);
-			wrSensorReg8_8(0xce, 0x71);
-			break;
-		default :
-			wrSensorReg8_8(0xff, 0x00);
-			wrSensorReg8_8(0xc7, 0x00); //AWB on
-			break; 
-		}	
-#endif
-}
-void ArduCAM:: OV3640_set_Light_Mode(uint8_t Light_Mode)
-{
-#if (defined (OV3640_CAM)||defined (OV3640_MINI_3MP))
-	switch(Light_Mode)
-		{
-			
-		case Auto:
-			wrSensorReg16_8(0x332b, 0x00);//AWB auto, bit[3]:0,auto
-			break;
-		case Sunny:
-			wrSensorReg16_8(0x332b, 0x08); //AWB off
-			wrSensorReg16_8(0x33a7, 0x5e);
-			wrSensorReg16_8(0x33a8, 0x40);
-			wrSensorReg16_8(0x33a9, 0x46);
-			break;
-		case Cloudy:
-			wrSensorReg16_8(0x332b, 0x08);
-			wrSensorReg16_8(0x33a7, 0x68);
-			wrSensorReg16_8(0x33a8, 0x40);
-			wrSensorReg16_8(0x33a9, 0x4e);	
-			break;
-		case Office:
-			wrSensorReg16_8(0x332b, 0x08);
-			wrSensorReg16_8(0x33a7, 0x52);
-			wrSensorReg16_8(0x33a8, 0x40);
-			wrSensorReg16_8(0x33a9, 0x58);
-			break;
-		case Home:
-			wrSensorReg16_8(0x332b, 0x08);
-			wrSensorReg16_8(0x33a7, 0x44);
-			wrSensorReg16_8(0x33a8, 0x40);
-			wrSensorReg16_8(0x33a9, 0x70);
-			break;
-		}	
-#endif
-		 
-}
+}	
 	
-	
-void ArduCAM::OV5642_set_Light_Mode(uint8_t Light_Mode)
-{
+void ArduCAM::OV5642_set_Light_Mode(uint8_t Light_Mode) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)
-	switch(Light_Mode)
-		{
+	switch(Light_Mode) {
 			
 		case Advanced_AWB:
 			wrSensorReg16_8(0x3406 ,0x0 );
@@ -672,11 +466,9 @@ void ArduCAM::OV5642_set_Light_Mode(uint8_t Light_Mode)
 #endif
 }
 	
-void ArduCAM::OV5640_set_Light_Mode(uint8_t Light_Mode)
-{
+void ArduCAM::OV5640_set_Light_Mode(uint8_t Light_Mode) {
 #if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	switch(Light_Mode)
-		{
+	switch(Light_Mode) {
 		case Auto:
 			wrSensorReg16_8(0x3212, 0x03); // start group 3
 			wrSensorReg16_8(0x3406, 0x00);
