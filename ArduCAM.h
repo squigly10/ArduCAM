@@ -464,7 +464,6 @@ struct sensor_reg {
 class ArduCAM 
 {
  public:
-	ArduCAM( void );
 	ArduCAM(int CS);
 	ArduCAM(byte model ,int CS);
 	void InitCAM( void );

@@ -15,10 +15,6 @@
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "memorysaver.h"
@@ -30,13 +26,6 @@
 #if defined(__SAM3X8E__)
 #define Wire Wire1
 #endif
-
-
-
-ArduCAM::ArduCAM() {
-	sensor_model = OV5642;
-	sensor_addr = 0x78;
-}
 
 //defaults to OV5642
 ArduCAM::ArduCAM(int CS) {
@@ -68,98 +57,48 @@ ArduCAM::ArduCAM(byte model ,int CS) {
 		default:
 			sensor_addr = 0x42;
 			break;
-		}	
-#if defined (RASPBERRY_PI)
-	// initialize i2c:
-	if (!arducam_i2c_init(sensor_addr)) {
-		printf("ERROR: I2C init failed\n");
-	}
-#endif
+		}
 }
 
 void ArduCAM::InitCAM() {
-	
-	switch (sensor_model) {
-		case OV5642:
-			{
+	if (sensor_model == OV5642) {
 #if ( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )
-				wrSensorReg16_8(0x3008, 0x80);
-				if (m_fmt == RAW){
-					//Init and set 640x480;
-					wrSensorRegs16_8(OV5642_1280x960_RAW);	
-					wrSensorRegs16_8(OV5642_640x480_RAW);	
-				}else{	
-					wrSensorRegs16_8(OV5642_QVGA_Preview);
-					delay(100);
-					if (m_fmt == JPEG)
-						{
-							delay(100);
-							wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA);
-							wrSensorRegs16_8(ov5642_320x240);
-							delay(100);
-							wrSensorReg16_8(0x3818, 0xa8);
-							wrSensorReg16_8(0x3621, 0x10);
-							wrSensorReg16_8(0x3801, 0xb0);
-#if (defined(OV5642_MINI_5MP_PLUS) || (defined ARDUCAM_SHIELD_V2))
-							wrSensorReg16_8(0x4407, 0x04);
-#else
-							wrSensorReg16_8(0x4407, 0x0C);
-#endif
-						}
-					else
-						{
-							
-							byte reg_val;
-							wrSensorReg16_8(0x4740, 0x21);
-							wrSensorReg16_8(0x501e, 0x2a);
-							wrSensorReg16_8(0x5002, 0xf8);
-							wrSensorReg16_8(0x501f, 0x01);
-							wrSensorReg16_8(0x4300, 0x61);
-							rdSensorReg16_8(0x3818, &reg_val);
-							wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
-							rdSensorReg16_8(0x3621, &reg_val);
-							wrSensorReg16_8(0x3621, reg_val & 0xdf);
-						}
-				}
-
-#endif
-				break;
-			}
-		case OV5640:
-			{
-#if ( defined(OV5640_CAM) || defined(OV5640_MINI_5MP_PLUS) )
+		wrSensorReg16_8(0x3008, 0x80);
+		if (m_fmt == RAW) {
+			//Init and set 640x480;
+			wrSensorRegs16_8(OV5642_1280x960_RAW);	
+			wrSensorRegs16_8(OV5642_640x480_RAW);	
+		} else {	
+			wrSensorRegs16_8(OV5642_QVGA_Preview);
+			delay(100);
+			if (m_fmt == JPEG) {
 				delay(100);
-				if (m_fmt == JPEG)
-					{
-						wrSensorReg16_8(0x3103, 0x11);
-						wrSensorReg16_8(0x3008, 0x82);
-						delay(100);
-						wrSensorRegs16_8(OV5640YUV_Sensor_Dvp_Init);
-						delay(500);
-						wrSensorRegs16_8(OV5640_JPEG_QSXGA);
-						wrSensorRegs16_8(OV5640_QSXGA2QVGA);
-#if (defined(OV5640_MINI_5MP_PLUS) || (defined ARDUCAM_SHIELD_V2))
-						wrSensorReg16_8(0x4407, 0x04);
+				wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA);
+				wrSensorRegs16_8(ov5642_320x240);
+				delay(100);
+				wrSensorReg16_8(0x3818, 0xa8);
+				wrSensorReg16_8(0x3621, 0x10);
+				wrSensorReg16_8(0x3801, 0xb0);
+#if (defined(OV5642_MINI_5MP_PLUS) || (defined ARDUCAM_SHIELD_V2))
+				wrSensorReg16_8(0x4407, 0x04);
 #else
-						wrSensorReg16_8(0x4407, 0x0C);
+				wrSensorReg16_8(0x4407, 0x0C);
 #endif
-					}
-				else
-					{
-						wrSensorReg16_8(0x3103, 0x11);
-						wrSensorReg16_8(0x3008, 0x82);
-						delay(500);
-						wrSensorRegs16_8(OV5640YUV_Sensor_Dvp_Init);
-						wrSensorRegs16_8(OV5640_RGB_QVGA);
-					}
-
-#endif
-				break;
+			} else {							
+				byte reg_val;
+				wrSensorReg16_8(0x4740, 0x21);
+				wrSensorReg16_8(0x501e, 0x2a);
+				wrSensorReg16_8(0x5002, 0xf8);
+				wrSensorReg16_8(0x501f, 0x01);
+				wrSensorReg16_8(0x4300, 0x61);
+				rdSensorReg16_8(0x3818, &reg_val);
+				wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
+				rdSensorReg16_8(0x3621, &reg_val);
+				wrSensorReg16_8(0x3621, reg_val & 0xdf);
 			}
-		default:
-
-			break;
 		}
+#endif
+	}
 }
 
 void ArduCAM::flush_fifo(void) {
@@ -292,8 +231,7 @@ uint8_t ArduCAM:: bus_read(int address) {
 
 void ArduCAM::OV5642_set_RAW_size(uint8_t size) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)		
-	switch (size)
-		{
+	switch (size) {
 		case OV5642_640x480:
 			wrSensorRegs16_8(OV5642_1280x960_RAW);	
 			wrSensorRegs16_8(OV5642_640x480_RAW);	
@@ -315,9 +253,7 @@ void ArduCAM::OV5642_set_RAW_size(uint8_t size) {
 void ArduCAM::OV5642_set_JPEG_size(uint8_t size) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)
 	uint8_t reg_val;
-
-	switch (size)
-		{
+	switch (size) {
 		case OV5642_320x240:
 			wrSensorRegs16_8(ov5642_320x240);
 			break;
@@ -344,47 +280,6 @@ void ArduCAM::OV5642_set_JPEG_size(uint8_t size) {
 			break;
 		}
 #endif
-}
-
-
-void ArduCAM::OV5640_set_JPEG_size(uint8_t size) {
-#if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	switch (size)
-		{
-		case OV5640_320x240:
-			wrSensorRegs16_8(OV5640_QSXGA2QVGA);
-			break;
-		case OV5640_352x288:
-			wrSensorRegs16_8(OV5640_QSXGA2CIF);
-			break;
-		case OV5640_640x480:
-			wrSensorRegs16_8(OV5640_QSXGA2VGA);
-			break;
-		case OV5640_800x480:
-			wrSensorRegs16_8(OV5640_QSXGA2WVGA);
-			break;
-		case OV5640_1024x768:
-			wrSensorRegs16_8(OV5640_QSXGA2XGA);
-			break;
-		case OV5640_1280x960:
-			wrSensorRegs16_8(OV5640_QSXGA2SXGA);
-			break;
-		case OV5640_1600x1200:
-			wrSensorRegs16_8(OV5640_QSXGA2UXGA);
-			break;
-		case OV5640_2048x1536:
-			wrSensorRegs16_8(OV5640_QSXGA2QXGA);
-			break;
-		case OV5640_2592x1944:
-			wrSensorRegs16_8(OV5640_JPEG_QSXGA);
-			break;
-		default:
-			//320x240
-			wrSensorRegs16_8(OV5640_QSXGA2QVGA);
-			break;
-		}
-#endif
-
 }
 
 void ArduCAM::set_format(byte fmt) {
@@ -464,206 +359,7 @@ void ArduCAM::OV5642_set_Light_Mode(uint8_t Light_Mode) {
 		}	
 #endif
 }
-	
-void ArduCAM::OV5640_set_Light_Mode(uint8_t Light_Mode) {
-#if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	switch(Light_Mode) {
-		case Auto:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x3406, 0x00);
-			wrSensorReg16_8(0x3400, 0x04);
-			wrSensorReg16_8(0x3401, 0x00);
-			wrSensorReg16_8(0x3402, 0x04);
-			wrSensorReg16_8(0x3403, 0x00);
-			wrSensorReg16_8(0x3404, 0x04);
-			wrSensorReg16_8(0x3405, 0x00);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // lanuch group 3
-			wrSensorReg16_8(0x5183 ,0x0 );	
-			break;
-		case Sunny:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x3406, 0x01);
-			wrSensorReg16_8(0x3400, 0x06);
-			wrSensorReg16_8(0x3401, 0x1c);
-			wrSensorReg16_8(0x3402, 0x04);
-			wrSensorReg16_8(0x3403, 0x00);
-			wrSensorReg16_8(0x3404, 0x04);
-			wrSensorReg16_8(0x3405, 0xf3);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // lanuch group 3
-			break;
-		case Office:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x3406, 0x01);
-			wrSensorReg16_8(0x3400, 0x05);
-			wrSensorReg16_8(0x3401, 0x48);
-			wrSensorReg16_8(0x3402, 0x04);
-			wrSensorReg16_8(0x3403, 0x00);
-			wrSensorReg16_8(0x3404, 0x07);
-			wrSensorReg16_8(0x3405, 0xcf);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // lanuch group 3
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x3406, 0x01);
-			wrSensorReg16_8(0x3400, 0x06);
-			wrSensorReg16_8(0x3401, 0x48);
-			wrSensorReg16_8(0x3402, 0x04);
-			wrSensorReg16_8(0x3403, 0x00);
-			wrSensorReg16_8(0x3404, 0x04);
-			wrSensorReg16_8(0x3405, 0xd3);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // lanuch group 3
-			break;
-		case Cloudy:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x3406, 0x01);
-			wrSensorReg16_8(0x3400, 0x06);
-			wrSensorReg16_8(0x3401, 0x48);
-			wrSensorReg16_8(0x3402, 0x04);
-			wrSensorReg16_8(0x3403, 0x00);
-			wrSensorReg16_8(0x3404, 0x04);
-			wrSensorReg16_8(0x3405, 0xd3);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // lanuch group 3	
-			break;
-		case Home:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x3406, 0x01);
-			wrSensorReg16_8(0x3400, 0x04);
-			wrSensorReg16_8(0x3401, 0x10);
-			wrSensorReg16_8(0x3402, 0x04);
-			wrSensorReg16_8(0x3403, 0x00);
-			wrSensorReg16_8(0x3404, 0x08);
-			wrSensorReg16_8(0x3405, 0x40);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // lanuch group 3
-			break;
-		default :
-			break; 
-		}
-#endif
-}		
-	
-void ArduCAM::OV5640_set_Color_Saturation(uint8_t Color_Saturation) {
-#if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	switch(Color_Saturation) {
-		case Saturation3:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5381, 0x1c);
-			wrSensorReg16_8(0x5382, 0x5a);
-			wrSensorReg16_8(0x5383, 0x06);
-			wrSensorReg16_8(0x5384, 0x2b);
-			wrSensorReg16_8(0x5385, 0xab);
-			wrSensorReg16_8(0x5386, 0xd6);
-			wrSensorReg16_8(0x5387, 0xda);
-			wrSensorReg16_8(0x5388, 0xd6);
-			wrSensorReg16_8(0x5389, 0x04);
-			wrSensorReg16_8(0x538b, 0x98);
-			wrSensorReg16_8(0x538a, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Saturation2:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5381, 0x1c);
-			wrSensorReg16_8(0x5382, 0x5a);
-			wrSensorReg16_8(0x5383, 0x06);
-			wrSensorReg16_8(0x5384, 0x24);
-			wrSensorReg16_8(0x5385, 0x8f);
-			wrSensorReg16_8(0x5386, 0xb3);
-			wrSensorReg16_8(0x5387, 0xb6);
-			wrSensorReg16_8(0x5388, 0xb3);
-			wrSensorReg16_8(0x5389, 0x03);
-			wrSensorReg16_8(0x538b, 0x98);
-			wrSensorReg16_8(0x538a, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Saturation1:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5381, 0x1c);
-			wrSensorReg16_8(0x5382, 0x5a);
-			wrSensorReg16_8(0x5383, 0x06);
-			wrSensorReg16_8(0x5384, 0x1f);
-			wrSensorReg16_8(0x5385, 0x7a);
-			wrSensorReg16_8(0x5386, 0x9a);
-			wrSensorReg16_8(0x5387, 0x9c);
-			wrSensorReg16_8(0x5388, 0x9a);
-			wrSensorReg16_8(0x5389, 0x02);
-			wrSensorReg16_8(0x538b, 0x98);
-			wrSensorReg16_8(0x538a, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Saturation0:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5381, 0x1c);
-			wrSensorReg16_8(0x5382, 0x5a);
-			wrSensorReg16_8(0x5383, 0x06);
-			wrSensorReg16_8(0x5384, 0x1a);
-			wrSensorReg16_8(0x5385, 0x66);
-			wrSensorReg16_8(0x5386, 0x80);
-			wrSensorReg16_8(0x5387, 0x82);
-			wrSensorReg16_8(0x5388, 0x80);
-			wrSensorReg16_8(0x5389, 0x02);
-			wrSensorReg16_8(0x538b, 0x98);
-			wrSensorReg16_8(0x538a, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;		
-		case Saturation_1:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5381, 0x1c);
-			wrSensorReg16_8(0x5382, 0x5a);
-			wrSensorReg16_8(0x5383, 0x06);
-			wrSensorReg16_8(0x5384, 0x15);
-			wrSensorReg16_8(0x5385, 0x52);
-			wrSensorReg16_8(0x5386, 0x66);
-			wrSensorReg16_8(0x5387, 0x68);
-			wrSensorReg16_8(0x5388, 0x66);
-			wrSensorReg16_8(0x5389, 0x02);
-			wrSensorReg16_8(0x538b, 0x98);
-			wrSensorReg16_8(0x538a, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Saturation_2:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5381, 0x1c);
-			wrSensorReg16_8(0x5382, 0x5a);
-			wrSensorReg16_8(0x5383, 0x06);
-			wrSensorReg16_8(0x5384, 0x10);
-			wrSensorReg16_8(0x5385, 0x3d);
-			wrSensorReg16_8(0x5386, 0x4d);
-			wrSensorReg16_8(0x5387, 0x4e);
-			wrSensorReg16_8(0x5388, 0x4d);
-			wrSensorReg16_8(0x5389, 0x01);
-			wrSensorReg16_8(0x538b, 0x98);
-			wrSensorReg16_8(0x538a, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Saturation_3:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5381, 0x1c);
-			wrSensorReg16_8(0x5382, 0x5a);
-			wrSensorReg16_8(0x5383, 0x06);
-			wrSensorReg16_8(0x5384, 0x0c);
-			wrSensorReg16_8(0x5385, 0x30);
-			wrSensorReg16_8(0x5386, 0x3d);
-			wrSensorReg16_8(0x5387, 0x3e);
-			wrSensorReg16_8(0x5388, 0x3d);
-			wrSensorReg16_8(0x5389, 0x01);
-			wrSensorReg16_8(0x538b, 0x98);
-			wrSensorReg16_8(0x538a, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		}
-#endif
-}
-	
+		
 void ArduCAM::OV5642_set_Color_Saturation(uint8_t Color_Saturation) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)	
 	switch(Color_Saturation) {
@@ -785,77 +481,7 @@ void ArduCAM::OV5642_set_Brightness(uint8_t Brightness) {
 			break;	
 		}
 #endif				
-}
-	
-void ArduCAM::OV5640_set_Brightness(uint8_t Brightness) {
-#if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	switch(Brightness) {
-		case Brightness4:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x40);
-			wrSensorReg16_8(0x5588, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Brightness3:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x30);
-			wrSensorReg16_8(0x5588, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Brightness2:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x20);
-			wrSensorReg16_8(0x5588, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Brightness1:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x10);
-			wrSensorReg16_8(0x5588, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3	
-			break;
-		case Brightness0:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x00);
-			wrSensorReg16_8(0x5588, 0x01);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3	
-			break;
-		case Brightness_1:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x10);
-			wrSensorReg16_8(0x5588, 0x09);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Brightness_2:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x20);
-			wrSensorReg16_8(0x5588, 0x09);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Brightness_3:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x30);
-			wrSensorReg16_8(0x5588, 0x09);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Brightness_4:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5587, 0x40);
-			wrSensorReg16_8(0x5588, 0x09);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;							
-		}
-#endif
-}
+}	
 	
 void ArduCAM::OV5642_set_Contrast(uint8_t Contrast) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)	
@@ -1123,94 +749,6 @@ void ArduCAM::OV5642_set_Special_effects(uint8_t Special_effect) {
 #endif
 }
 	
-void ArduCAM::OV5640_set_Special_effects(uint8_t Special_effect) {
-#if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	switch(Special_effect) {
-		case Normal:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x06);
-			wrSensorReg16_8(0x5583, 0x40); // sat U
-			wrSensorReg16_8(0x5584, 0x10); // sat V
-			wrSensorReg16_8(0x5003, 0x08);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 
-			break;
-		case Blueish:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x1e);
-			wrSensorReg16_8(0x5583, 0xa0);
-			wrSensorReg16_8(0x5584, 0x40);
-			wrSensorReg16_8(0x5003, 0x08);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Reddish:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x1e);
-			wrSensorReg16_8(0x5583, 0x80);
-			wrSensorReg16_8(0x5584, 0xc0);
-			wrSensorReg16_8(0x5003, 0x08);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case BW:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x1e);
-			wrSensorReg16_8(0x5583, 0x80);
-			wrSensorReg16_8(0x5584, 0x80);
-			wrSensorReg16_8(0x5003, 0x08);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Sepia:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x1e);
-			wrSensorReg16_8(0x5583, 0x40);
-			wrSensorReg16_8(0x5584, 0xa0);
-			wrSensorReg16_8(0x5003, 0x08);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;			
-		case Negative:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x40);
-			wrSensorReg16_8(0x5003, 0x08);
-			wrSensorReg16_8(0x5583, 0x40); // sat U
-			wrSensorReg16_8(0x5584, 0x10); // sat V
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3
-			break;
-		case Greenish:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x1e);
-			wrSensorReg16_8(0x5583, 0x60);
-			wrSensorReg16_8(0x5584, 0x60);
-			wrSensorReg16_8(0x5003, 0x08);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3		
-			break;		
-		case Overexposure:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x1e);
-			wrSensorReg16_8(0x5583, 0xf0);
-			wrSensorReg16_8(0x5584, 0xf0);
-			wrSensorReg16_8(0x5003, 0x08);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3	
-			break;	
-		case Solarize:
-			wrSensorReg16_8(0x3212, 0x03); // start group 3
-			wrSensorReg16_8(0x5580, 0x06);
-			wrSensorReg16_8(0x5583, 0x40); // sat U
-			wrSensorReg16_8(0x5584, 0x10); // sat V
-			wrSensorReg16_8(0x5003, 0x09);
-			wrSensorReg16_8(0x3212, 0x13); // end group 3
-			wrSensorReg16_8(0x3212, 0xa3); // launch group 3	
-			break;	
-		}
-#endif	
-}	
-	
 void ArduCAM::OV5642_set_Exposure_level(uint8_t level) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)	
 	switch(level) {
@@ -1441,121 +979,6 @@ void ArduCAM::OV5642_Test_Pattern(uint8_t Pattern) {
 #endif
 }
 	
-void ArduCAM::OV5640_set_Night_Mode(uint8_t Night_mode) {
-#if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	uint8_t reg_val;
-	switch(Night_mode) {
-		case Night_Mode_On:
-			rdSensorReg16_8(0x3a00,&reg_val);
-			reg_val = reg_val| 0x04;
-			wrSensorReg16_8(0x3a00, reg_val);
-			break;
-		case Night_Mode_Off:
-			rdSensorReg16_8(0x3a00,&reg_val);
-			reg_val = reg_val& 0xfb;
-			wrSensorReg16_8(0x3a00, reg_val);
-			break;
-		}
-#endif		
-}
-	
-void ArduCAM::OV5640_set_Banding_Filter(uint8_t Banding_Filter) {
-#if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	uint8_t reg_val;
-	switch(Banding_Filter) {
-		case Off:
-			rdSensorReg16_8(0x3a00,&reg_val);
-			reg_val = reg_val & 0xdf; // turn off banding filter
-			wrSensorReg16_8(0x3a00, reg_val);
-			break;
-		case Manual_50HZ:
-			wrSensorReg16_8(0x3c00, 04); // set to 50Hz
-			wrSensorReg16_8(0x3c01, 80); // manual banding filter
-			rdSensorReg16_8(0x3a00,&reg_val);
-			reg_val = reg_val | 0x20; // turn on banding filter
-			wrSensorReg16_8(0x3a00, reg_val);
-			break;
-		case Manual_60HZ:
-			wrSensorReg16_8(0x3c00, 00); // set to 60Hz
-			wrSensorReg16_8(0x3c01, 80); // manual banding filter
-			rdSensorReg16_8(0x3a00, &reg_val);
-			reg_val = reg_val | 0x20; // turn on banding filter
-			wrSensorReg16_8(0x3a00, reg_val);
-			break;
-		case Auto_Detection:
-			wrSensorReg16_8(0x3c01, 00); // auto banding filter
-			rdSensorReg16_8(0x3a00, &reg_val);
-			reg_val = reg_val & 0xdf; // turn off banding filter
-			wrSensorReg16_8(0x3a00, reg_val);
-			break;
-		}
-#endif
-}
-	
-void ArduCAM::OV5640_set_EV(uint8_t EV) {
-#if (defined (OV5640_CAM)||defined (OV5640_MINI_5MP_PLUS))
-	switch(EV) {
-		case EV3:
-			wrSensorReg16_8(0x3a0f, 0x60);
-			wrSensorReg16_8(0x3a10, 0x58);
-			wrSensorReg16_8(0x3a11, 0xa0);
-			wrSensorReg16_8(0x3a1b, 0x60);
-			wrSensorReg16_8(0x3a1e, 0x58);
-			wrSensorReg16_8(0x3a1f, 0x20);
-			break;
-		case EV2:
-			wrSensorReg16_8(0x3a0f, 0x50);
-			wrSensorReg16_8(0x3a10, 0x48);
-			wrSensorReg16_8(0x3a11, 0x90);
-			wrSensorReg16_8(0x3a1b, 0x50);
-			wrSensorReg16_8(0x3a1e, 0x48);
-			wrSensorReg16_8(0x3a1f, 0x20);
-			break;
-		case EV1:
-			wrSensorReg16_8(0x3a0f, 0x40);
-			wrSensorReg16_8(0x3a10, 0x38);
-			wrSensorReg16_8(0x3a11, 0x71);
-			wrSensorReg16_8(0x3a1b, 0x40);
-			wrSensorReg16_8(0x3a1e, 0x38);
-			wrSensorReg16_8(0x3a1f, 0x10);
-			break;
-		case EV0:
-			wrSensorReg16_8(0x3a0f, 0x38);
-			wrSensorReg16_8(0x3a10, 0x30);
-			wrSensorReg16_8(0x3a11, 0x61);
-			wrSensorReg16_8(0x3a1b, 0x38);
-			wrSensorReg16_8(0x3a1e, 0x30);
-			wrSensorReg16_8(0x3a1f, 0x10);
-			break;
-		case EV_1:
-			wrSensorReg16_8(0x3a0f, 0x30);
-			wrSensorReg16_8(0x3a10, 0x28);
-			wrSensorReg16_8(0x3a11, 0x61);
-			wrSensorReg16_8(0x3a1b, 0x30);
-			wrSensorReg16_8(0x3a1e, 0x28);
-			wrSensorReg16_8(0x3a1f, 0x10);
-			break;
-		case EV_2:
-			wrSensorReg16_8(0x3a0f, 0x20);
-			wrSensorReg16_8(0x3a10, 0x18);
-			wrSensorReg16_8(0x3a11, 0x41);
-			wrSensorReg16_8(0x3a1b, 0x20);
-			wrSensorReg16_8(0x3a1e, 0x18);
-			wrSensorReg16_8(0x3a1f, 0x10);
-			break;
-		case EV_3:
-			wrSensorReg16_8(0x3a0f, 0x10);
-			wrSensorReg16_8(0x3a10, 0x08);
-			wrSensorReg16_8(0x3a1b, 0x10);
-			wrSensorReg16_8(0x3a1e, 0x08);
-			wrSensorReg16_8(0x3a11, 0x20);
-			wrSensorReg16_8(0x3a1f, 0x10);
-			break;	
-		}
-#endif		
-}
-
-
 
 // Write 8 bit values to 8 bit register address
 int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[]) {
@@ -1580,7 +1003,6 @@ int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[]) {
 	int err = 0;
 	unsigned int reg_addr, reg_val;
 	const struct sensor_reg *next = reglist;
-	
 	while ((reg_addr != 0xff) | (reg_val != 0xffff)) {
 			reg_addr = pgm_read_word(&next->reg);
 			reg_val = pgm_read_word(&next->val);
@@ -1599,7 +1021,6 @@ int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[]) {
 	unsigned int reg_addr;
 	unsigned char reg_val;
 	const struct sensor_reg *next = reglist;
-	
 	while ((reg_addr != 0xffff) | (reg_val != 0xff)) {
 			reg_addr = pgm_read_word(&next->reg);
 			reg_val = pgm_read_word(&next->val);
@@ -1632,7 +1053,6 @@ int ArduCAM::wrSensorRegs16_16(const struct sensor_reg reglist[]) {
 		}
 	return 1;
 }
-
 
 
 // Read/write 8 bit value to/from 8 bit register address	
