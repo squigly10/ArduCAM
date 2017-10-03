@@ -17,15 +17,10 @@
   Lesser General Public License for more details.
 */
 
-#include "memorysaver.h"
-#include "Arduino.h"
 #include "ArduCAM.h"
 #include <Wire.h>
 #include <SPI.h>
 #include "HardwareSerial.h"
-#if defined(__SAM3X8E__)
-#define Wire Wire1
-#endif
 
 //defaults to OV5642
 ArduCAM::ArduCAM(int CS) {
@@ -41,39 +36,33 @@ void ArduCAM::InitCAM() {
 	if (sensor_model == OV5642) {
 #if ( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )
 		wrSensorReg16_8(0x3008, 0x80);
-		if (m_fmt == RAW) {
-			//Init and set 640x480;
-			wrSensorRegs16_8(OV5642_1280x960_RAW);	
-			wrSensorRegs16_8(OV5642_640x480_RAW);	
-		} else {	
-			wrSensorRegs16_8(OV5642_QVGA_Preview);
+		wrSensorRegs16_8(OV5642_QVGA_Preview);
+		delay(100);
+		if (m_fmt == JPEG) {
 			delay(100);
-			if (m_fmt == JPEG) {
-				delay(100);
-				wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA);
-				wrSensorRegs16_8(ov5642_320x240);
-				delay(100);
-				wrSensorReg16_8(0x3818, 0xa8);
-				wrSensorReg16_8(0x3621, 0x10);
-				wrSensorReg16_8(0x3801, 0xb0);
+			wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA);
+			wrSensorRegs16_8(ov5642_320x240);
+			delay(100);
+			wrSensorReg16_8(0x3818, 0xa8);
+			wrSensorReg16_8(0x3621, 0x10);
+			wrSensorReg16_8(0x3801, 0xb0);
 #if (defined(OV5642_MINI_5MP_PLUS) || (defined ARDUCAM_SHIELD_V2))
-				wrSensorReg16_8(0x4407, 0x04);
+			wrSensorReg16_8(0x4407, 0x04);
 #else
-				wrSensorReg16_8(0x4407, 0x0C);
+			wrSensorReg16_8(0x4407, 0x0C);
 #endif
-			} else {							
-				byte reg_val;
-				wrSensorReg16_8(0x4740, 0x21);
-				wrSensorReg16_8(0x501e, 0x2a);
-				wrSensorReg16_8(0x5002, 0xf8);
-				wrSensorReg16_8(0x501f, 0x01);
-				wrSensorReg16_8(0x4300, 0x61);
-				rdSensorReg16_8(0x3818, &reg_val);
-				wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
-				rdSensorReg16_8(0x3621, &reg_val);
-				wrSensorReg16_8(0x3621, reg_val & 0xdf);
-			}
-		}
+		} else {							
+			byte reg_val;
+			wrSensorReg16_8(0x4740, 0x21);
+			wrSensorReg16_8(0x501e, 0x2a);
+			wrSensorReg16_8(0x5002, 0xf8);
+			wrSensorReg16_8(0x501f, 0x01);
+			wrSensorReg16_8(0x4300, 0x61);
+			rdSensorReg16_8(0x3818, &reg_val);
+			wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
+			rdSensorReg16_8(0x3621, &reg_val);
+			wrSensorReg16_8(0x3621, reg_val & 0xdf);
+		}		
 #endif
 	}
 }
@@ -203,28 +192,6 @@ uint8_t ArduCAM:: bus_read(int address) {
 	sbi(P_CS, B_CS);
 	return value;
 #endif
-}
-
-
-void ArduCAM::OV5642_set_RAW_size(uint8_t size) {
-#if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)		
-	switch (size) {
-		case OV5642_640x480:
-			wrSensorRegs16_8(OV5642_1280x960_RAW);	
-			wrSensorRegs16_8(OV5642_640x480_RAW);	
-			break;
-		case OV5642_1280x960:
-			wrSensorRegs16_8(OV5642_1280x960_RAW);	
-			break;
-		case OV5642_1920x1080:
-			wrSensorRegs16_8(ov5642_RAW);
-			wrSensorRegs16_8(OV5642_1920x1080_RAW);
-			break;
-		case OV5642_2592x1944:
-			wrSensorRegs16_8(ov5642_RAW);
-			break;
-		} 
-#endif			
 }
 
 void ArduCAM::OV5642_set_JPEG_size(uint8_t size) {

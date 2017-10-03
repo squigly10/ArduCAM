@@ -3,8 +3,7 @@
   Library modified by Tom Hightower
   Original Library Copyright (C)2011-2015 ArduCAM.com. All right reserved
 
-  This is a version of the ArduCAM Library found at ArduCAM.com, modified
-  by removing unused functions to encourage lightweight functionality
+  This is a version of the ArduCAM Library found at ArduCAM.com, modified by removing unused functions to encourage lightweight functionality
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -15,17 +14,19 @@
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #ifndef ArduCAM_H
 #define ArduCAM_H
 #include "Arduino.h"
 #include <pins_arduino.h>
-#include "memorysaver.h"
+
+//MemorySaver
+#define _MEMORYSAVER_
+#define OV5642_MINI_5MP_PLUS
+#if (defined(ARDUCAM_SHIELD_REVC) || defined(ARDUCAM_SHIELD_V2))
+#define OV5642_CAM
+#endif
 
 #if defined (__AVR__)
 #define cbi(reg, bitmask) *reg &= ~bitmask
@@ -38,72 +39,6 @@
 #define fontbyte(x) pgm_read_byte(&cfont.font[x])  
 #define regtype volatile uint8_t
 #define regsize uint8_t
-#endif
-
-#if defined(__SAM3X8E__)
-
-#define cbi(reg, bitmask) *reg &= ~bitmask
-#define sbi(reg, bitmask) *reg |= bitmask
-
-#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
-#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
-
-#define cport(port, data) port &= data
-#define sport(port, data) port |= data
-
-#define swap(type, i, j) {type t = i; i = j; j = t;}
-#define fontbyte(x) cfont.font[x]  
-
-#define regtype volatile uint32_t
-#define regsize uint32_t
-
-#define PROGMEM
-
-#define pgm_read_byte(x)        (*((char *)x))
-#define pgm_read_word(x)        ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
-#define pgm_read_byte_near(x)   (*((char *)x))
-#define pgm_read_byte_far(x)    (*((char *)x))
-#define pgm_read_word_near(x)   ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
-#define pgm_read_word_far(x)    ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x))))
-#define PSTR(x)  x
-#if defined F
-#undef F
-#endif
-#define F(X) (X)	
-#endif	
-
-#if defined(ESP8266)
-#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
-#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
-#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
-#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
-	
-#define cport(port, data) port &= data
-#define sport(port, data) port |= data
-	
-#define swap(type, i, j) {type t = i; i = j; j = t;}
-	
-#define fontbyte(x) cfont.font[x]  
-	
-#define regtype volatile uint32_t
-#define regsize uint32_t
-#endif	
-
-#if defined(ESP32)
-#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
-#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
-#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
-#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
-	
-#define cport(port, data) port &= data
-#define sport(port, data) port |= data
-	
-#define swap(type, i, j) {type t = i; i = j; j = t;}
-	
-#define fontbyte(x) cfont.font[x]  
-	
-#define regtype volatile uint32_t
-#define regsize uint32_t
 #endif
 
 #if defined(__CPU_ARC__)
@@ -125,10 +60,10 @@
 /****************************************************/
 #define BMP 	0
 #define JPEG	1
-#define RAW	  2
 
 #define OV5642		3
 
+//Set JPEG size
 #define OV5642_320x240 		0	//320x240
 #define OV5642_640x480		1	//640x480
 #define OV5642_1024x768		2	//1024x768
@@ -162,7 +97,7 @@
 #define Contrast_3           7
 #define Contrast_4           8
 
-
+//Exposure
 #define Exposure_17_EV                    0
 #define Exposure_13_EV                    1
 #define Exposure_10_EV                    2
@@ -175,7 +110,7 @@
 #define Exposure17_EV                     9
 #define Exposure03_EV                     10
 
-
+//Sharpness
 #define Auto_Sharpness_default              0
 #define Auto_Sharpness1                     1
 #define Auto_Sharpness2                     2
@@ -186,34 +121,10 @@
 #define Manual_Sharpness4                   7
 #define Manual_Sharpness5                   8
 
-
-#define Sharpness1                         0
-#define Sharpness2                         1
-#define Sharpness3                         2
-#define Sharpness4                         3
-#define Sharpness5                         4
-#define Sharpness6                         5
-#define Sharpness7                         6
-#define Sharpness8                         7
-#define Sharpness_auto                       8
-
-
-#define EV3                                 0
-#define EV2                                 1
-#define EV1                                 2
-#define EV0                                 3
-#define EV_1                                4
-#define EV_2                                5
-#define EV_3                                6
-
+//Compress Quality
 #define high_quality                         0
 #define default_quality                      1
 #define low_quality                          2
-
-#define Off                            0
-#define Manual_50HZ                    1
-#define Manual_60HZ                    2
-#define Auto_Detection                 3
 
 /****************************************************/
 /* I2C Control Definition 							*/
@@ -372,7 +283,6 @@ class ArduCAM  {
 	byte rdSensorReg16_16(uint16_t regID, uint16_t* regDat);
 
 	void OV5642_set_JPEG_size(uint8_t size);
-	void OV5642_set_RAW_size (uint8_t size);
 	
 	void OV5642_set_Light_Mode(uint8_t Light_Mode);
 	void OV5642_set_Color_Saturation(uint8_t Color_Saturation);
