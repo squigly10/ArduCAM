@@ -465,7 +465,6 @@ class ArduCAM
 {
  public:
 	ArduCAM(int CS);
-	ArduCAM(byte model ,int CS);
 	void InitCAM( void );
 	
 	void CS_HIGH(void);
@@ -518,68 +517,25 @@ class ArduCAM
 	byte wrSensorReg16_16(int regID, int regDat);
 	byte rdSensorReg16_16(uint16_t regID, uint16_t* regDat);
 
-	void OV2640_set_JPEG_size(uint8_t size);
-	void OV3640_set_JPEG_size(uint8_t size);
 	void OV5642_set_JPEG_size(uint8_t size);
-	void OV5640_set_JPEG_size(uint8_t size);
-	
 	void OV5642_set_RAW_size (uint8_t size);
 	
-	
-	void OV2640_set_Light_Mode(uint8_t Light_Mode);
-	void OV3640_set_Light_Mode(uint8_t Light_Mode);
 	void OV5642_set_Light_Mode(uint8_t Light_Mode);
-	void OV5640_set_Light_Mode(uint8_t Light_Mode);
 	
-	void OV2640_set_Color_Saturation(uint8_t Color_Saturation);
-	void OV3640_set_Color_Saturation(uint8_t Color_Saturation);
 	void OV5642_set_Color_Saturation(uint8_t Color_Saturation);
-	void OV5640_set_Color_Saturation(uint8_t Color_Saturation);
 	
-	
-	void OV2640_set_Brightness(uint8_t Brightness);
-	void OV3640_set_Brightness(uint8_t Brightness);
 	void OV5642_set_Brightness(uint8_t Brightness);
-	void OV5640_set_Brightness(uint8_t Brightness);
 	
-	void OV2640_set_Contrast(uint8_t Contrast);
-	void OV3640_set_Contrast(uint8_t Contrast);
 	void OV5642_set_Contrast(uint8_t Contrast);
-	void OV5640_set_Contrast(uint8_t Contrast);
 	
-	void OV2640_set_Special_effects(uint8_t Special_effect);
-	void OV3640_set_Special_effects(uint8_t Special_effect);
-	void OV5642_set_Special_effects(uint8_t Special_effect);
-	void OV5640_set_Special_effects(uint8_t Special_effect);
-	
-	
-	void OV3640_set_Exposure_level(uint8_t level);
-	void OV3640_set_Sharpness(uint8_t Sharpness);
-	void OV3640_set_Mirror_Flip(uint8_t Mirror_Flip);
-	
-	
-	void OV5642_set_hue(uint8_t degree);
 	void OV5642_set_Exposure_level(uint8_t level);
 	void OV5642_set_Sharpness(uint8_t Sharpness);
-	void OV5642_set_Mirror_Flip(uint8_t Mirror_Flip);
 	void OV5642_set_Compress_quality(uint8_t quality);
-	void OV5642_Test_Pattern(uint8_t Pattern);
-   
-  
-	void OV5640_set_EV(uint8_t EV);
-	void OV5640_set_Night_Mode(uint8_t Night_mode);
-	void OV5640_set_Banding_Filter(uint8_t Banding_Filter);
-	
 	
 	
 	
 	void set_format(byte fmt);
 	
-#if defined (RASPBERRY_PI)
-	uint8_t transfer(uint8_t data);
-	void transfers(uint8_t *buf, uint32_t size);
-#endif
-
 	void transferBytes_(uint8_t * out, uint8_t * in, uint8_t size);
 	void transferBytes(uint8_t * out, uint8_t * in, uint32_t size);
 	inline void setDataBits(uint16_t bits);
