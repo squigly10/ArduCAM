@@ -23,13 +23,9 @@
 
 #ifndef ArduCAM_H
 #define ArduCAM_H
-#include "memorysaver.h"
-#if defined ( RASPBERRY_PI ) 
-#else
 #include "Arduino.h"
 #include <pins_arduino.h>
 #include "memorysaver.h"
-#endif
 
 #if defined (__AVR__)
 #define cbi(reg, bitmask) *reg &= ~bitmask
@@ -123,58 +119,15 @@
 #define regsize uint32_t
 #endif
 
-#if defined (RASPBERRY_PI)
-#define regtype volatile uint32_t
-#define regsize uint32_t 
-#define byte uint8_t
-#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
-#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
-#define PROGMEM
-	
-#define PSTR(x)  x
-#if defined F
-#undef F
-#endif
-#define F(X) (X)
-#endif
-
 
 /****************************************************/
-/* Sensor related definition 												*/
+/* Sensor related definition 						*/
 /****************************************************/
 #define BMP 	0
 #define JPEG	1
 #define RAW	  2
 
-#define OV7670		0	
-#define MT9D111_A	1
-#define OV7675		2
 #define OV5642		3
-#define OV3640  	4
-#define OV2640  	5
-#define OV9655		6
-#define MT9M112		7
-#define OV7725		8
-#define OV7660		9
-#define MT9M001 	10
-#define OV5640 		11
-#define MT9D111_B	12
-#define OV9650		13
-#define MT9V111		14
-#define MT9T112		15
-#define MT9D112		16
-#define MT9V034 	17
-
-#define OV2640_160x120 		0	//160x120
-#define OV2640_176x144 		1	//176x144
-#define OV2640_320x240 		2	//320x240
-#define OV2640_352x288 		3	//352x288
-#define OV2640_640x480		4	//640x480
-#define OV2640_800x600 		5	//800x600
-#define OV2640_1024x768		6	//1024x768
-#define OV2640_1280x1024	7	//1280x1024
-#define OV2640_1600x1200	8	//1600x1200
-
 
 #define OV5642_320x240 		0	//320x240
 #define OV5642_640x480		1	//640x480
@@ -186,37 +139,7 @@
 #define OV5642_1920x1080  7
 
 
-#define OV5640_320x240 		0	//320x240 
-#define OV5640_352x288		1	//352x288
-#define OV5640_640x480 	  2	//640x480
-#define OV5640_800x480	  3	//800x480
-#define OV5640_1024x768	  4	//1024x768
-#define OV5640_1280x960	  5	//1280x960	
-#define OV5640_1600x1200	6	 //1600x1200
-#define OV5640_2048x1536	7  //2048x1536
-#define OV5640_2592x1944	8	 //2592x1944
-
-
-
-//Light Mode
-
-#define Auto                 0
-#define Sunny                1
-#define Cloudy               2
-#define Office               3
-#define Home                 4
-
-#define Advanced_AWB         0
-#define Simple_AWB           1
-#define Manual_day           2
-#define Manual_A             3
-#define Manual_cwf           4
-#define Manual_cloudy        5
-
-
-
 //Color Saturation 
-
 #define Saturation4          0
 #define Saturation3          1
 #define Saturation2          2
@@ -227,21 +150,8 @@
 #define Saturation_3         7
 #define Saturation_4         8
 
-//Brightness
-
-#define Brightness4          0
-#define Brightness3          1
-#define Brightness2          2
-#define Brightness1          3
-#define Brightness0          4
-#define Brightness_1         5
-#define Brightness_2         6
-#define Brightness_3         7
-#define Brightness_4         8
-
 
 //Contrast
-
 #define Contrast4            0
 #define Contrast3            1
 #define Contrast2            2
@@ -252,38 +162,6 @@
 #define Contrast_3           7
 #define Contrast_4           8
 
-
-
-#define degree_180            0
-#define degree_150            1
-#define degree_120            2
-#define degree_90             3
-#define degree_60             4
-#define degree_30             5
-#define degree_0              6
-#define degree30              7
-#define degree60              8
-#define degree90              9
-#define degree120             10
-#define degree150             11
-
-
-
-//Special effects
-
-#define Antique                      0
-#define Bluish                       1
-#define Greenish                     2
-#define Reddish                      3
-#define BW                           4
-#define Negative                     5
-#define BWnegative                   6
-#define Normal                       7
-#define Sepia                        8
-#define Overexposure                 9
-#define Solarize                     10
-#define  Blueish                     11
-#define Yellowish                    12
 
 #define Exposure_17_EV                    0
 #define Exposure_13_EV                    1
@@ -309,7 +187,6 @@
 #define Manual_Sharpness5                   8
 
 
-
 #define Sharpness1                         0
 #define Sharpness2                         1
 #define Sharpness3                         2
@@ -321,8 +198,6 @@
 #define Sharpness_auto                       8
 
 
-
-
 #define EV3                                 0
 #define EV2                                 1
 #define EV1                                 2
@@ -331,25 +206,9 @@
 #define EV_2                                5
 #define EV_3                                6
 
-#define MIRROR                              0
-#define FLIP                                1
-#define MIRROR_FLIP                         2
-
-
-
-
 #define high_quality                         0
 #define default_quality                      1
 #define low_quality                          2
-
-#define Color_bar                      0
-#define Color_square                   1
-#define BW_square                      2
-#define DLI                            3
-
-
-#define Night_Mode_On                  0
-#define Night_Mode_Off                 1
 
 #define Off                            0
 #define Manual_50HZ                    1
@@ -357,7 +216,7 @@
 #define Auto_Detection                 3
 
 /****************************************************/
-/* I2C Control Definition 													*/
+/* I2C Control Definition 							*/
 /****************************************************/
 #define I2C_ADDR_8BIT 0
 #define I2C_ADDR_16BIT 1
@@ -375,18 +234,16 @@
 #define SENSOR_VAL_TERM_16BIT               0xFFFF
 
 //Define maximum frame buffer size
-#if (defined OV2640_MINI_2MP)
-#define MAX_FIFO_SIZE		0x5FFFF			//384KByte
-#elif (defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined ARDUCAM_SHIELD_REVC)
+#if (defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined ARDUCAM_SHIELD_REVC)
 #define MAX_FIFO_SIZE		0x7FFFF			//512KByte
 #else
 #define MAX_FIFO_SIZE		0x7FFFFF		//8MByte
 #endif 
 
 /****************************************************/
-/* ArduChip registers definition 											*/
+/* ArduChip registers definition 					*/
 /****************************************************/
-#define RWBIT									0x80  //READ AND WRITE BIT IS BIT[7]
+#define RWBIT					0x80  //READ AND WRITE BIT IS BIT[7]
 
 #define ARDUCHIP_TEST1       	0x00  //TEST register
 
@@ -443,7 +300,6 @@
 #define FIFO_SIZE2				0x43  //Camera write FIFO size[15:8]
 #define FIFO_SIZE3				0x44  //Camera write FIFO size[18:16]
 
-
 /****************************************************/
 
 
@@ -456,13 +312,11 @@ struct sensor_reg {
 };
 
 
-
 /****************************************************************/
 /* define a structure for sensor register initialization values */
 /****************************************************************/
 
-class ArduCAM 
-{
+class ArduCAM  {
  public:
 	ArduCAM(int CS);
 	void InitCAM( void );
@@ -521,18 +375,13 @@ class ArduCAM
 	void OV5642_set_RAW_size (uint8_t size);
 	
 	void OV5642_set_Light_Mode(uint8_t Light_Mode);
-	
 	void OV5642_set_Color_Saturation(uint8_t Color_Saturation);
-	
-	void OV5642_set_Brightness(uint8_t Brightness);
-	
+	void OV5642_set_Brightness(uint8_t Brightness);	
 	void OV5642_set_Contrast(uint8_t Contrast);
 	
 	void OV5642_set_Exposure_level(uint8_t level);
 	void OV5642_set_Sharpness(uint8_t Sharpness);
 	void OV5642_set_Compress_quality(uint8_t quality);
-	
-	
 	
 	void set_format(byte fmt);
 	
@@ -548,62 +397,8 @@ class ArduCAM
 	byte sensor_addr;
 };
 
-#if defined OV7660_CAM	
-#include "ov7660_regs.h"
-#endif
-
-#if defined OV7725_CAM	
-#include "ov7725_regs.h"
-#endif
-
-#if defined OV7670_CAM	
-#include "ov7670_regs.h"
-#endif
-
-#if defined OV7675_CAM
-#include "ov7675_regs.h"
-#endif
-
 #if ( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )	
 #include "ov5642_regs.h"
 #endif
-
-#if defined OV3640_CAM	
-#include "ov3640_regs.h"
-#endif
-
-#if (defined(OV2640_CAM) || defined(OV2640_MINI_2MP))
-#include "ov2640_regs.h"
-#endif
-
-#if defined MT9D111A_CAM  || defined MT9D111B_CAM 	
-#include "mt9d111_regs.h"
-#endif
-
-#if defined MT9M112_CAM	
-#include "mt9m112_regs.h"
-#endif
-
-#if defined MT9V111_CAM	
-#include "mt9v111_regs.h"
-#endif
-
-#if ( defined(OV5640_CAM)	|| defined(OV5640_MINI_5MP_PLUS) )
-#include "ov5640_regs.h"
-#endif
-
-#if defined MT9M001_CAM	
-#include "mt9m001_regs.h"
-#endif
-
-#if defined MT9T112_CAM	
-#include "mt9t112_regs.h"
-#endif
-
-#if defined MT9D112_CAM	
-#include "mt9d112_regs.h"
-#endif
-
-
 
 #endif
