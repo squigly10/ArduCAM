@@ -284,10 +284,8 @@ class ArduCAM  {
 
 	void OV5642_set_JPEG_size(uint8_t size);
 	
-	void OV5642_set_Color_Saturation(uint8_t Color_Saturation);
 	void OV5642_set_Contrast(uint8_t Contrast);	
 	void OV5642_set_Exposure_level(uint8_t level);
-	void OV5642_set_Sharpness(uint8_t Sharpness);
 	void OV5642_set_Compress_quality(uint8_t quality);
 	
 	void set_format(byte fmt);

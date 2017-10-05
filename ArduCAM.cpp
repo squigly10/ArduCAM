@@ -231,68 +231,7 @@ void ArduCAM::set_format(byte fmt) {
 		m_fmt = BMP;
 	else
 		m_fmt = JPEG;
-}	
-		
-void ArduCAM::OV5642_set_Color_Saturation(uint8_t Color_Saturation) {
-#if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)	
-	switch(Color_Saturation) {
-		case Saturation4:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x80);
-			wrSensorReg16_8(0x5584 ,0x80);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;
-		case Saturation3:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x70);
-			wrSensorReg16_8(0x5584 ,0x70);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;
-		case Saturation2:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x60);
-			wrSensorReg16_8(0x5584 ,0x60);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;
-		case Saturation1:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x50);
-			wrSensorReg16_8(0x5584 ,0x50);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;
-		case Saturation0:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x40);
-			wrSensorReg16_8(0x5584 ,0x40);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;		
-		case Saturation_1:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x30);
-			wrSensorReg16_8(0x5584 ,0x30);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;
-		case Saturation_2:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x20);
-			wrSensorReg16_8(0x5584 ,0x20);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;
-		case Saturation_3:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x10);
-			wrSensorReg16_8(0x5584 ,0x10);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;
-		case Saturation_4:
-			wrSensorReg16_8(0x5001 ,0xff);
-			wrSensorReg16_8(0x5583 ,0x00);
-			wrSensorReg16_8(0x5584 ,0x00);
-			wrSensorReg16_8(0x5580 ,0x02);
-			break;
-		}
-#endif	
-}	
+}			
 	
 void ArduCAM::OV5642_set_Contrast(uint8_t Contrast) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)	
@@ -456,75 +395,20 @@ void ArduCAM::OV5642_set_Exposure_level(uint8_t level) {
 		}
 #endif	
 }
-		
-void ArduCAM::OV5642_set_Sharpness(uint8_t Sharpness) {
-#if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)	
-	switch(Sharpness) {
-		case Auto_Sharpness_default:
-			wrSensorReg16_8(0x530A ,0x00);
-			wrSensorReg16_8(0x530c ,0x0 );
-			wrSensorReg16_8(0x530d ,0xc );
-			wrSensorReg16_8(0x5312 ,0x40);
-			break;
-		case Auto_Sharpness1:
-			wrSensorReg16_8(0x530A ,0x00);
-			wrSensorReg16_8(0x530c ,0x4 );
-			wrSensorReg16_8(0x530d ,0x18);
-			wrSensorReg16_8(0x5312 ,0x20);
-			break;
-		case Auto_Sharpness2:
-			wrSensorReg16_8(0x530A ,0x00);
-			wrSensorReg16_8(0x530c ,0x8 );
-			wrSensorReg16_8(0x530d ,0x30);
-			wrSensorReg16_8(0x5312 ,0x10);
-			break;
-		case Manual_Sharpnessoff:
-			wrSensorReg16_8(0x530A ,0x08);
-			wrSensorReg16_8(0x531e ,0x00);
-			wrSensorReg16_8(0x531f ,0x00);
-			break;
-		case Manual_Sharpness1:
-			wrSensorReg16_8(0x530A ,0x08);
-			wrSensorReg16_8(0x531e ,0x04);
-			wrSensorReg16_8(0x531f ,0x04);
-			break;
-		case Manual_Sharpness2:
-			wrSensorReg16_8(0x530A ,0x08);
-			wrSensorReg16_8(0x531e ,0x08);
-			wrSensorReg16_8(0x531f ,0x08);
-			break;
-		case Manual_Sharpness3:
-			wrSensorReg16_8(0x530A ,0x08);
-			wrSensorReg16_8(0x531e ,0x0c);
-			wrSensorReg16_8(0x531f ,0x0c);
-			break;
-		case Manual_Sharpness4:
-			wrSensorReg16_8(0x530A ,0x08);
-			wrSensorReg16_8(0x531e ,0x0f);
-			wrSensorReg16_8(0x531f ,0x0f);
-			break;
-		case Manual_Sharpness5:
-			wrSensorReg16_8(0x530A ,0x08);
-			wrSensorReg16_8(0x531e ,0x1f);
-			wrSensorReg16_8(0x531f ,0x1f);
-			break;
-		}
-#endif
-}	
-	
+			
 void ArduCAM::OV5642_set_Compress_quality(uint8_t quality) {
 #if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)	
 	switch(quality) {
-		case high_quality:
-			wrSensorReg16_8(0x4407, 0x02);
-			break;
-		case default_quality:
-			wrSensorReg16_8(0x4407, 0x04);
-			break;
-		case low_quality:
-			wrSensorReg16_8(0x4407, 0x08);
-			break;
-		}
+	case high_quality:
+		wrSensorReg16_8(0x4407, 0x02);
+		break;
+	case default_quality:
+		wrSensorReg16_8(0x4407, 0x04);
+		break;
+	case low_quality:
+		wrSensorReg16_8(0x4407, 0x08);
+		break;
+	}
 #endif
 }	
 
