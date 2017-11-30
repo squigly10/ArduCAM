@@ -1,4 +1,4 @@
-# ArduCAM
+# ArduCAM Lite
 ## Lightweight version of the ArduCAM Library for use with ArduTom.
 <br>
 This library works only with the OV5642 ArduCAM model.
